@@ -52,7 +52,7 @@ function Heading() {
   return (
     <Example containerClassName="col-span-2" className="flex flex-col" title="Heading">
       <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold">BiteSides</h1>
-      <p className="pl-1.5 text-lg">A food blog by the extremely unqualified.<br />We're a couple in Chattanooga that love to eat.<br />We particularly enjoy Japanese, Fried Chicken, Brunch and Lemoncellos</p>
+      <p className="pl-1.5 text-lg">A food blog by the extremely unqualified.<br />We're a couple in Chattanooga that love to eat.<br />We particularly enjoy Japanese, Fried Chicken, Brunch and Limoncellos</p>
     </Example>
   )
 }
