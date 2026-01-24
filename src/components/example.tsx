@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 
 function LandingRow({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className="bg-background w-full">
+    <div className="w-full relative z-10">
       <div
         data-slot="example-wrapper"
         className={cn(
