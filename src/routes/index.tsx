@@ -7,13 +7,16 @@ export const Route = createFileRoute("/")({
   loader: async () => {
     try {
       // const reviews = await getReviews();
-      const reviews = await new Promise(function (res) { setTimeout(() => res([]), 4000) })
-      return { reviews };
+      console.log("Waiting...")
+      await new Promise(function (res) { setTimeout(() => res([]), 4000) })
+      console.log("Done waiting")
+      return { reviews: [] };
     } catch (error) {
       console.error("!!!!!!! Failed to fetch reviews:", error);
       return { reviews: [] };
     }
   },
+  preload: true
 });
 
 function App() {

@@ -12,5 +12,6 @@
       "WebFetch(domain:www.answeroverflow.com)",
       "WebFetch(domain:nitro.build)"
     ]
-  }
+  },
+  "outputStyle": "Explanatory"
 }

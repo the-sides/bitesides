@@ -16,8 +16,9 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart({
       prerender: {
+        concurrency: 1,
         enabled: true,
-        crawlLinks: true, // Auto-discover pages from links
+        crawlLinks: false, // Auto-discover pages from links
         failOnError: false, // Don't fail build on prerender errors (nitro-nightly should fix race condition)
         retryCount: 3,
         retryDelay: 1000,
