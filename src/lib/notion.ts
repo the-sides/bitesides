@@ -8,7 +8,7 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
-const DATABASE_ID = process.env.NOTION_DATABASE_ID!;
+const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID!;
 
 type RichText = RichTextItemResponse[];
 
@@ -90,8 +90,8 @@ async function getPageBlocks(pageId: string): Promise<Block[]> {
 }
 
 export async function getReviews(): Promise<Review[]> {
-  const response = await notion.databases.query({
-    database_id: DATABASE_ID,
+  const response = await notion.dataSources.query({
+    data_source_id: DATA_SOURCE_ID,
     filter: {
       property: "Published",
       checkbox: {

@@ -13,6 +13,8 @@ export const Route = createFileRoute("/")({
     const reviews = await fetchReviews();
     return { reviews };
   },
+  // Enable static prerendering - data is fetched at build time
+  preload: true,
 });
 
 function App() {
