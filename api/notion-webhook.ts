@@ -5,10 +5,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Log the webhook event for debugging
-  console.log("Notion webhook received:", req.body?.type || "unknown");
+  const body = req.body;
 
-  // Trigger Vercel rebuild
+  // Handle Notion webhook verification
+  // Notion sends { verification_token: "secret_xxx" } when setting up the webhook
+  // Copy this token from Vercel logs and paste it in Notion's verification form
+  if (body?.verification_token) {
+    console.log("===========================================");
+    console.log("NOTION WEBHOOK VERIFICATION TOKEN:");
+    console.log(body.verification_token);
+    console.log("===========================================");
+    return res.status(200).json({ success: true });
+  }
+
+  // Log the webhook event
+  console.log("Notion webhook received:", body?.type || "unknown");
+
+  // Trigger Vercel rebuild for content update events
   const deployHook = process.env.VERCEL_DEPLOY_HOOK;
   if (deployHook) {
     try {
