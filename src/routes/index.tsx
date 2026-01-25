@@ -1,11 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { ComponentExample } from "@/components/component-example";
 import { getReviews } from "@/lib/notion";
+
+const fetchReviews = createServerFn({ method: "GET" }).handler(async () => {
+  return getReviews();
+});
 
 export const Route = createFileRoute("/")({
   component: App,
   loader: async () => {
-    const reviews = await getReviews();
+    const reviews = await fetchReviews();
     return { reviews };
   },
 });
