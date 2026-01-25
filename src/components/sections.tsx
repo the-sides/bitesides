@@ -1,12 +1,11 @@
 import { cn } from "@/lib/utils"
 
-function LandingRow({ className, ...props }: React.ComponentProps<"div">) {
+function HeroRow({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div className="w-full relative z-10">
       <div
-        data-slot="example-wrapper"
         className={cn(
-          "mx-auto flex flex-col lg:grid lg:grid-cols-3 w-full min-w-0 content-center items-start gap-x-8 gap-y-8 p-4 pt-2 sm:gap-12 sm:p-6 l",
+          "mx-auto flex flex-col lg:grid lg:grid-cols-3 w-full min-w-0 content-center items-start gap-x-8 gap-y-8 p-4 pt-2 sm:gap-12 sm:p-6",
           className
         )}
         {...props}
@@ -15,7 +14,7 @@ function LandingRow({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function Example({
+function Section({
   title,
   children,
   className,
@@ -27,22 +26,20 @@ function Example({
 }) {
   return (
     <div
-      data-slot="example"
       className={cn(
-        "flex w-dfull min-w-0 flex-col gap-1 self-stretch lg:max-w-none",
+        "flex w-full min-w-0 flex-col gap-1 self-stretch lg:max-w-none",
         containerClassName
       )}
       {...props}
     >
       {title && (
-        <div className="text-muted-foreground dpx-1.5 py-2 text-xs font-medium">
+        <div className="text-muted-foreground px-1.5 py-2 text-xs font-medium">
           {title}
         </div>
       )}
       <div
-        data-slot="example-content"
         className={cn(
-          " flex min-w-0 flex-1 items-start gap-6 border border-dashed p-4 sm:p-6",
+          "flex min-w-0 flex-1 items-start gap-6 border border-dashed p-4 sm:p-6",
           className
         )}
       >
@@ -52,4 +49,4 @@ function Example({
   )
 }
 
-export { LandingRow, Example }
+export { HeroRow, Section }
