@@ -2,6 +2,7 @@ import { Section, HeroRow } from "@/components/sections"
 import { Reviews } from "./reviews"
 import { TextTypewriter } from "@/components/typewriter"
 import CurvedLoop from "./CurvedLoop"
+import CircularText from "./CircularText"
 import type { Review } from "@/lib/notion"
 
 import "@/components/CurvedLoop.css"
@@ -17,7 +18,7 @@ export function HomePage({ reviews }: HomePageProps) {
         <PhotoGallery />
         <HeroHeading />
       </HeroRow>
-      <div className="absolute fade-in animate-in duration-2000 top-0 w-full h-[20vh]">
+      <div className="opacity-25 absolute fade-in animate-in duration-2000 top-0 w-full h-[20vh]">
         <CurvedLoop speed={1} marqueeText="I know it's 11 but we should get Cane's ✦" />
       </div>
       <div className="px-4 pb-8 sm:px-6">
@@ -40,9 +41,18 @@ function PhotoGallery() {
 
 function HeroHeading() {
   return (
-    <Section containerClassName="col-span-2" className="flex flex-col" title="Heading">
+    <Section containerClassName="col-span-2 relative" className="flex flex-col" title="Heading">
       <TextTypewriter className="text-6xl md:text-8xl lg:text-9xl font-bold">BiteSides</TextTypewriter>
-      <TextTypewriter delay={1} speed={50} className="pl-1.5 text-lg">A food blog by the extremely unqualified. We're a couple in Chattanooga that love to eat. We particularly enjoy Japanese, Fried Chicken, Brunch and Limoncellos</TextTypewriter>
+      <TextTypewriter delay={1} speed={50} className="pl-1.5 text-lg max-w-sm pr-12">A food blog by the extremely unqualified. We're a couple in Chattanooga that love to eat. We particularly enjoy Japanese, Fried Chicken, Brunch and Limoncellos</TextTypewriter>
+      <div className="absolute top-1/2 -translate-y-1/2 -right-[200px]">
+        <CircularText
+          text="🍜 yummy • 🍗 crispy • 🥞 brunch • 🍋 zesty • "
+          className="scale-[1.75] md:scale-[3] font-mono dtracking-[4em]"
+          spinDuration={32}
+          gap={3}
+          onHover="speedUp"
+        />
+      </div>
     </Section>
   )
 }

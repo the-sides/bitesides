@@ -12,7 +12,10 @@
       "WebFetch(domain:www.answeroverflow.com)",
       "WebFetch(domain:nitro.build)",
       "Bash(bun run build:*)",
-      "WebFetch(domain:bun.com)"
+      "WebFetch(domain:bun.com)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:reactbits.dev)",
+      "Bash(bun x:*)"
     ]
   },
   "outputStyle": "Explanatory"
