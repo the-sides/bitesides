@@ -8,8 +8,13 @@ import { Reviews } from "./reviews"
 import { TextTypewriter } from "@/components/typewriter"
 import {} from "@/components/CurvedLoop.css"
 import CurvedLoop from "./CurvedLoop"
+import type { Review } from "@/lib/notion"
 
-export function ComponentExample() {
+interface ComponentExampleProps {
+  reviews: Review[];
+}
+
+export function ComponentExample({ reviews }: ComponentExampleProps) {
   return (
     <>
       <LandingRow>
@@ -22,7 +27,7 @@ export function ComponentExample() {
       <div className="px-4 pb-8 sm:px-6">
 
         <Example containerClassName="col-span-2" className="flex flex-col" title="Reviews">
-           <Reviews/>
+           <Reviews reviews={reviews} />
         </Example>
       </div>
     </>
