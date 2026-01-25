@@ -8,7 +8,9 @@
       "WebFetch(domain:github.com)",
       "Skill(tanstack-start)",
       "WebSearch",
-      "WebFetch(domain:tanstack.com)"
+      "WebFetch(domain:tanstack.com)",
+      "WebFetch(domain:www.answeroverflow.com)",
+      "WebFetch(domain:nitro.build)"
     ]
   }
 }
