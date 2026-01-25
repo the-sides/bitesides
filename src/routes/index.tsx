@@ -5,8 +5,13 @@ import { getReviews } from "@/lib/notion";
 export const Route = createFileRoute("/")({
   component: App,
   loader: async () => {
-    const reviews = await getReviews();
-    return { reviews };
+    try {
+      const reviews = await getReviews();
+      return { reviews };
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+      return { reviews: [] };
+    }
   },
 });
 
