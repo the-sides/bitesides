@@ -139,7 +139,7 @@ export function Reviews({ reviews }: ReviewsProps) {
   return (
     <div className="space-y-3 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-12 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5">
       {reviews.map((review, i) => (
-        <div key={review.id}>
+        <div className="max-w-lg" key={review.id}>
           <h2 className={i === 0 ? "!mt-0" : ""}>{review.name}</h2>
           <ReviewContent blocks={review.blocks} />
         </div>

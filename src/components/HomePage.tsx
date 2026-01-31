@@ -13,7 +13,7 @@ interface HomePageProps {
 
 export function HomePage({ reviews }: HomePageProps) {
   return (
-    <>
+    <main className="w-screen overflow-x-hidden">
       <HeroRow>
         <PhotoGallery />
         <HeroHeading />
@@ -26,7 +26,7 @@ export function HomePage({ reviews }: HomePageProps) {
           <Reviews reviews={reviews} />
         </Section>
       </div>
-    </>
+    </main>
   )
 }
 
