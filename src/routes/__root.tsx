@@ -18,6 +18,7 @@ export const Route = createRootRoute({
         title: 'BiteSides',
         description: 'We like to eat, and that happens to be in Chattanooga, TN most of the time.'
       },
+      { property: 'og:image', content: '/meta-image.png' },
     ],
     links: [
       {
