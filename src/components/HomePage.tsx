@@ -13,7 +13,7 @@ interface HomePageProps {
 
 export function HomePage({ reviews }: HomePageProps) {
   return (
-    <main className="w-screen overflow-x-hidden">
+    <main className="w-full overflow-x-hidden">
       <HeroRow>
         <PhotoGallery />
         <HeroHeading />
