@@ -15,10 +15,10 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'BiteSides',
-        description: 'We like to eat, and that happens to be in Chattanooga, TN most of the time.'
+        title: 'Jacob & Vicki',
+        description: 'Wedding details for Jacob and Vicki.'
       },
-      { property: 'og:image', content: '/meta-image.png' },
+      { property: 'og:image', content: '/PXL_20251227_010505912.jpg' },
     ],
     links: [
       {

@@ -1,58 +1,76 @@
-import { Section, HeroRow } from "@/components/sections"
-import { Reviews } from "./reviews"
-import { TextTypewriter } from "@/components/typewriter"
-import CurvedLoop from "./CurvedLoop"
-import CircularText from "./CircularText"
-import type { Review } from "@/lib/notion"
+const keepsakePhotos = [
+  {
+    src: "/PXL_20251025_213818182.jpg",
+    alt: "Jacob and Vicki smiling in the mountains",
+  },
+  {
+    src: "/DSC03122.webp",
+    alt: "Vicki smiling near a framed painting",
+  },
+  {
+    src: "/IMG_4023.jpg",
+    alt: "Jacob and Vicki sitting together at a restaurant booth",
+  },
+]
 
-import "@/components/CurvedLoop.css"
-
-interface HomePageProps {
-  reviews: Review[];
-}
-
-export function HomePage({ reviews }: HomePageProps) {
+export function HomePage() {
   return (
-    <main className="w-full overflow-x-hidden">
-      <HeroRow>
-        <PhotoGallery />
-        <HeroHeading />
-      </HeroRow>
-      <div className="opacity-25 absolute fade-in animate-in duration-2000 top-0 w-full h-[20vh]">
-        <CurvedLoop speed={1} marqueeText="I know it's 11 but we should get Cane's ✦" />
-      </div>
-      <div className="px-4 pb-8 sm:px-6">
-        <Section containerClassName="col-span-2" className="flex flex-col" title="Reviews">
-          <Reviews reviews={reviews} />
-        </Section>
-      </div>
-    </main>
-  )
-}
-
-function PhotoGallery() {
-  return (
-    <Section containerClassName="absolute fade-in animate-in duration-2000 relative z-10 col-span-1 order-last md:order-none" title="Photos" className="w-3/4 lg:w-auto lg:min-h-[50vh] col-span-1 grid grid-cols-12 grid-rows-2 items-center justify-center">
-      <img className="col-start-1 col-end-7 row-start-1 row-end-4 object-cover p-2 border border-dashed" src='/herFood.jpg' alt="Food photo" />
-      <img className="col-start-6 col-end-13 z-10 row-start-3 row-end-6 object-cover p-2 border border-dashed" src='/meFood_small.jpg' alt="Food photo" />
-    </Section>
-  )
-}
-
-function HeroHeading() {
-  return (
-    <Section containerClassName="col-span-2 relative" className="flex flex-col" title="Heading">
-      <TextTypewriter className="text-6xl md:text-8xl lg:text-9xl font-bold">BiteSides</TextTypewriter>
-      <TextTypewriter delay={1} speed={50} className="pl-1.5 text-lg max-w-sm pr-12">A food blog by the extremely unqualified. We're a couple in Chattanooga that love to eat. We particularly enjoy Japanese, Fried Chicken, Brunch and Limoncellos</TextTypewriter>
-      <div className="absolute top-1/2 -translate-y-1/2 -right-[200px]">
-        <CircularText
-          text="🍜 yummy • 🍗 crispy • 🥞 brunch • 🍋 zesty • "
-          className="scale-[1.75] md:scale-[3] font-mono dtracking-[4em]"
-          spinDuration={32}
-          gap={3}
-          onHover="speedUp"
+    <main className="min-h-screen overflow-x-hidden bg-[#f4eadc] text-[#221812]">
+      <section
+        className="relative min-h-[92svh] overflow-hidden px-5 py-5 sm:px-8 sm:py-7 lg:px-10"
+        aria-label="Jacob and Vicki wedding hero"
+      >
+        <img
+          src="/PXL_20251227_010505912.jpg"
+          alt="Jacob and Vicki under string lights"
+          className="absolute inset-0 h-full w-full object-cover object-[62%_50%]"
         />
-      </div>
-    </Section>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(21,13,8,0.78)_0%,rgba(21,13,8,0.48)_42%,rgba(21,13,8,0.08)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_28%,rgba(244,234,220,0.34),transparent_30%),linear-gradient(180deg,rgba(12,7,4,0.18),rgba(12,7,4,0.5))]" />
+
+        <div className="relative z-10 flex min-h-[calc(92svh-2.5rem)] flex-col justify-between text-[#fff8ee] sm:min-h-[calc(92svh-3.5rem)]">
+          <header className="flex items-start justify-between gap-6 font-['Avenir_Next','Gill_Sans',sans-serif] text-xs uppercase tracking-[0.24em] text-[#fff1d7]/80">
+            <a href="/" className="leading-none">
+              J & V
+            </a>
+            <p className="text-right leading-relaxed">
+              Wedding
+              <span className="block text-[#d7b46a]">Details soon</span>
+            </p>
+          </header>
+
+          <div className="grid items-end gap-10 pb-7 pt-28 sm:pb-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12 lg:pt-36">
+            <div className="max-w-4xl">
+              <p className="mb-5 font-['Avenir_Next','Gill_Sans',sans-serif] text-sm uppercase tracking-[0.32em] text-[#d7b46a] sm:text-base">
+                The wedding of
+              </p>
+              <h1 className="font-['Bodoni_72','Didot','Baskerville',serif] text-6xl leading-[0.86] text-balance sm:text-8xl lg:text-[9rem]">
+                Jacob
+                <span className="block">& Vicki</span>
+              </h1>
+              <p className="mt-6 max-w-xl font-['Avenir_Next','Gill_Sans',sans-serif] text-base leading-7 text-[#fff8ee]/82 sm:text-lg">
+                A quiet little corner for the celebration ahead. Save the date,
+                travel notes, and RSVP details will live here soon.
+              </p>
+            </div>
+
+            <div className="grid max-w-md grid-cols-3 gap-2 justify-self-start lg:justify-self-end">
+              {keepsakePhotos.map((photo) => (
+                <img
+                  key={photo.src}
+                  src={photo.src}
+                  alt={photo.alt}
+                  className="aspect-[3/4] min-w-0 border border-[#fff8ee]/45 object-cover shadow-2xl shadow-black/35"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid min-h-[8svh] place-items-center border-t border-[#221812]/15 bg-[#f4eadc] px-5 py-4 font-['Avenir_Next','Gill_Sans',sans-serif] text-xs uppercase tracking-[0.24em] text-[#6f5a45]">
+        Jacob & Vicki
+      </section>
+    </main>
   )
 }
