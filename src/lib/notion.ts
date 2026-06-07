@@ -1,6 +1,8 @@
 import { Client } from "@notionhq/client";
 import type {
   BlockObjectResponse,
+  DataSourceObjectResponse,
+  PageObjectResponse,
   RichTextItemResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 
@@ -8,15 +10,18 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
-const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID!;
+const DATABASE_ID = process.env.NOTION_DATABASE_ID;
+const DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID;
 
-type RichText = RichTextItemResponse[];
+type RichText = Array<RichTextItemResponse>;
 
-interface Review {
+interface Post {
   id: string;
-  name: string;
+  title: string;
   slug: string;
-  blocks: Block[];
+  date: string | null;
+  excerpt: string | null;
+  blocks: Array<Block>;
 }
 
 type Block =
@@ -26,19 +31,22 @@ type Block =
   | { type: "bulleted_list_item"; text: RichText }
   | { type: "numbered_list_item"; text: RichText };
 
+type PageProperties = PageObjectResponse["properties"];
+type PageProperty = PageProperties[string];
+type DataSourceProperties = DataSourceObjectResponse["properties"];
+
 function extractRichText(block: BlockObjectResponse): RichText | null {
-  const b = block as any;
   switch (block.type) {
     case "paragraph":
-      return b.paragraph.rich_text;
+      return block.paragraph.rich_text;
     case "heading_2":
-      return b.heading_2.rich_text;
+      return block.heading_2.rich_text;
     case "heading_3":
-      return b.heading_3.rich_text;
+      return block.heading_3.rich_text;
     case "bulleted_list_item":
-      return b.bulleted_list_item.rich_text;
+      return block.bulleted_list_item.rich_text;
     case "numbered_list_item":
-      return b.numbered_list_item.rich_text;
+      return block.numbered_list_item.rich_text;
     default:
       return null;
   }
@@ -64,8 +72,53 @@ function transformBlock(block: BlockObjectResponse): Block | null {
   }
 }
 
-async function getPageBlocks(pageId: string): Promise<Block[]> {
-  const blocks: Block[] = [];
+async function resolveDataSourceId() {
+  if (DATA_SOURCE_ID) return DATA_SOURCE_ID;
+
+  if (!DATABASE_ID) {
+    throw new Error(
+      "Set NOTION_DATABASE_ID or NOTION_DATA_SOURCE_ID to fetch wedding posts.",
+    );
+  }
+
+  try {
+    const database = await notion.databases.retrieve({
+      database_id: DATABASE_ID,
+    });
+
+    if ("data_sources" in database && database.data_sources.length > 0) {
+      return database.data_sources[0].id;
+    }
+  } catch (error) {
+    try {
+      const dataSource = await notion.dataSources.retrieve({
+        data_source_id: DATABASE_ID,
+      });
+
+      if ("id" in dataSource) return dataSource.id;
+    } catch {
+      throw error;
+    }
+  }
+
+  throw new Error("No data source found for the wedding Notion database.");
+}
+
+async function getDataSource() {
+  const dataSourceId = await resolveDataSourceId();
+  const dataSource = await notion.dataSources.retrieve({
+    data_source_id: dataSourceId,
+  });
+
+  if (!("properties" in dataSource)) {
+    throw new Error("Could not retrieve wedding Notion data source schema.");
+  }
+
+  return dataSource;
+}
+
+async function getPageBlocks(pageId: string): Promise<Array<Block>> {
+  const blocks: Array<Block> = [];
   let cursor: string | undefined;
 
   do {
@@ -77,9 +130,7 @@ async function getPageBlocks(pageId: string): Promise<Block[]> {
     for (const block of response.results) {
       if ("type" in block) {
         const transformed = transformBlock(block);
-        if (transformed) {
-          blocks.push(transformed);
-        }
+        if (transformed) blocks.push(transformed);
       }
     }
 
@@ -89,49 +140,172 @@ async function getPageBlocks(pageId: string): Promise<Block[]> {
   return blocks;
 }
 
-export async function getReviews(): Promise<Review[]> {
-  const response = await notion.dataSources.query({
-    data_source_id: DATA_SOURCE_ID,
-    filter: {
+function findPropertyName(
+  properties: DataSourceProperties,
+  type: string,
+  preferredNames: Array<string>,
+) {
+  for (const name of preferredNames) {
+    if (name in properties && properties[name].type === type) return name;
+  }
+
+  const matchingProperty = Object.entries(properties).find(
+    ([, property]) => property.type === type,
+  );
+
+  return matchingProperty ? matchingProperty[0] : undefined;
+}
+
+function textFromRichText(richText: RichText) {
+  return richText.map((item) => item.plain_text).join("");
+}
+
+function textFromProperty(property: PageProperty | undefined) {
+  if (!property) return null;
+
+  switch (property.type) {
+    case "title":
+      return textFromRichText(property.title);
+    case "rich_text":
+      return textFromRichText(property.rich_text);
+    default:
+      return null;
+  }
+}
+
+function dateFromProperty(property: PageProperty | undefined) {
+  if (!property || property.type !== "date") return null;
+  return property.date?.start ?? null;
+}
+
+function slugify(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function excerptFromBlocks(blocks: Array<Block>) {
+  const paragraph = blocks.find((block) => block.type === "paragraph");
+  if (!paragraph) return null;
+
+  const text = textFromRichText(paragraph.text).trim();
+  if (!text) return null;
+
+  return text.length > 180 ? `${text.slice(0, 177).trim()}...` : text;
+}
+
+function publicationFilter(properties: DataSourceProperties) {
+  if ("Published" in properties && properties.Published.type === "checkbox") {
+    return {
       property: "Published",
       checkbox: {
         equals: true,
       },
-    },
-    sorts: [
-      {
-        property: "Name",
-        direction: "ascending",
+    } as const;
+  }
+
+  if ("Status" in properties && properties.Status.type === "status") {
+    return {
+      property: "Status",
+      status: {
+        equals: "Published",
       },
-    ],
+    } as const;
+  }
+
+  return undefined;
+}
+
+function sortForPosts(properties: DataSourceProperties) {
+  const dateProperty = findPropertyName(properties, "date", [
+    "Date",
+    "Published Date",
+    "Published At",
+    "Post Date",
+  ]);
+
+  if (dateProperty) {
+    return [
+      {
+        property: dateProperty,
+        direction: "descending",
+      },
+    ] as const;
+  }
+
+  return [
+    {
+      timestamp: "last_edited_time",
+      direction: "descending",
+    },
+  ] as const;
+}
+
+function postFromPage(
+  page: PageObjectResponse,
+  properties: DataSourceProperties,
+  blocks: Array<Block>,
+): Post | null {
+  const titleProperty = findPropertyName(properties, "title", ["Name", "Title"]);
+  const dateProperty = findPropertyName(properties, "date", [
+    "Date",
+    "Published Date",
+    "Published At",
+    "Post Date",
+  ]);
+  const excerptProperty = findPropertyName(properties, "rich_text", [
+    "Excerpt",
+    "Summary",
+    "Description",
+  ]);
+
+  const title = textFromProperty(
+    titleProperty ? page.properties[titleProperty] : undefined,
+  );
+
+  if (!title) return null;
+
+  const slug =
+    textFromProperty(page.properties.Slug) ||
+    textFromProperty(page.properties.slug) ||
+    slugify(title);
+
+  return {
+    id: page.id,
+    title,
+    slug,
+    date: dateFromProperty(dateProperty ? page.properties[dateProperty] : undefined),
+    excerpt:
+      textFromProperty(
+        excerptProperty ? page.properties[excerptProperty] : undefined,
+      ) || excerptFromBlocks(blocks),
+    blocks,
+  };
+}
+
+export async function getPosts(): Promise<Array<Post>> {
+  const dataSource = await getDataSource();
+  const filter = publicationFilter(dataSource.properties);
+  const response = await notion.dataSources.query({
+    data_source_id: dataSource.id,
+    filter,
+    sorts: sortForPosts(dataSource.properties),
+    result_type: "page",
   });
 
-  const reviews: Review[] = [];
+  const posts: Array<Post> = [];
 
   for (const page of response.results) {
     if (!("properties" in page)) continue;
 
-    const props = page.properties as any;
-    const name =
-      props.Name?.title?.[0]?.plain_text || props.title?.title?.[0]?.plain_text;
-
-    if (!name) continue;
-
-    const slug =
-      props.Slug?.rich_text?.[0]?.plain_text ||
-      name.toLowerCase().replace(/\s+/g, "-");
-
     const blocks = await getPageBlocks(page.id);
-
-    reviews.push({
-      id: page.id,
-      name,
-      slug,
-      blocks,
-    });
+    const post = postFromPage(page, dataSource.properties, blocks);
+    if (post) posts.push(post);
   }
 
-  return reviews;
+  return posts;
 }
 
-export type { Review, Block, RichText };
+export type { Block, Post, RichText };

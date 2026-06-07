@@ -1,3 +1,6 @@
+import type { Post } from "@/lib/notion";
+import { Posts } from "@/components/posts";
+
 const keepsakePhotos = [
   {
     src: "/PXL_20251025_213818182.jpg",
@@ -13,7 +16,11 @@ const keepsakePhotos = [
   },
 ]
 
-export function HomePage() {
+interface HomePageProps {
+  posts: Array<Post>;
+}
+
+export function HomePage({ posts }: HomePageProps) {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#f4eadc] text-[#221812]">
       <section
@@ -21,12 +28,12 @@ export function HomePage() {
         aria-label="Jacob and Vicki wedding hero"
       >
         <img
-          src="/PXL_20251227_010505912.jpg"
+          src="/haleywedding.webp"
           alt="Jacob and Vicki under string lights"
           className="absolute inset-0 h-full w-full object-cover object-[62%_50%]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(21,13,8,0.78)_0%,rgba(21,13,8,0.48)_42%,rgba(21,13,8,0.08)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_28%,rgba(244,234,220,0.34),transparent_30%),linear-gradient(180deg,rgba(12,7,4,0.18),rgba(12,7,4,0.5))]" />
+        <div className="absolute inset-0 opacity-75 bg-[linear-gradient(90deg,rgba(21,13,8,0.78)_0%,rgba(21,13,8,0.48)_42%,rgba(21,13,8,0.08)_100%)]" />
+        <div className="absolute inset-0 opacity-75 bg-[radial-gradient(circle_at_24%_28%,rgba(244,234,220,0.34),transparent_30%),linear-gradient(180deg,rgba(12,7,4,0.18),rgba(12,7,4,0.5))]" />
 
         <div className="relative z-10 flex min-h-[calc(92svh-2.5rem)] flex-col justify-between text-[#fff8ee] sm:min-h-[calc(92svh-3.5rem)]">
           <header className="flex items-start justify-between gap-6 font-['Avenir_Next','Gill_Sans',sans-serif] text-xs uppercase tracking-[0.24em] text-[#fff1d7]/80">
@@ -67,6 +74,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <Posts posts={posts} />
 
       <section className="grid min-h-[8svh] place-items-center border-t border-[#221812]/15 bg-[#f4eadc] px-5 py-4 font-['Avenir_Next','Gill_Sans',sans-serif] text-xs uppercase tracking-[0.24em] text-[#6f5a45]">
         Jacob & Vicki
