@@ -35,6 +35,10 @@ function RichTextRenderer({ richText }: { richText: RichText }) {
   );
 }
 
+function plainTextFromRichText(richText: RichText) {
+  return richText.map((item) => item.plain_text).join("");
+}
+
 function BlockRenderer({ block }: { block: Block }) {
   switch (block.type) {
     case "paragraph":
@@ -62,6 +66,26 @@ function BlockRenderer({ block }: { block: Block }) {
           <RichTextRenderer richText={block.text} />
         </li>
       );
+    case "image": {
+      const caption = plainTextFromRichText(block.caption).trim();
+
+      return (
+        <figure className="my-6 overflow-hidden border border-[#221812]/15 bg-[#f4eadc]/70">
+          <img
+            src={block.url}
+            alt={caption || "Wedding post image"}
+            loading="lazy"
+            decoding="async"
+            className="max-h-[34rem] w-full bg-[#e7d4bd] object-cover"
+          />
+          {block.caption.length > 0 && (
+            <figcaption className="border-t border-[#221812]/10 px-3 py-2 text-sm leading-6 text-[#6f5a45]">
+              <RichTextRenderer richText={block.caption} />
+            </figcaption>
+          )}
+        </figure>
+      );
+    }
     default:
       return null;
   }

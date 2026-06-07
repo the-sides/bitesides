@@ -29,7 +29,14 @@ type Block =
   | { type: "heading_2"; text: RichText }
   | { type: "heading_3"; text: RichText }
   | { type: "bulleted_list_item"; text: RichText }
-  | { type: "numbered_list_item"; text: RichText };
+  | { type: "numbered_list_item"; text: RichText }
+  | {
+      type: "image";
+      url: string;
+      caption: RichText;
+      source: "external" | "file";
+      expiryTime?: string;
+    };
 
 type PageProperties = PageObjectResponse["properties"];
 type PageProperty = PageProperties[string];
@@ -53,6 +60,25 @@ function extractRichText(block: BlockObjectResponse): RichText | null {
 }
 
 function transformBlock(block: BlockObjectResponse): Block | null {
+  if (block.type === "image") {
+    if (block.image.type === "external") {
+      return {
+        type: "image",
+        url: block.image.external.url,
+        caption: block.image.caption,
+        source: "external",
+      };
+    }
+
+    return {
+      type: "image",
+      url: block.image.file.url,
+      caption: block.image.caption,
+      source: "file",
+      expiryTime: block.image.file.expiry_time,
+    };
+  }
+
   const richText = extractRichText(block);
   if (!richText) return null;
 
