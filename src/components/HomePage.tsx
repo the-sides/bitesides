@@ -55,9 +55,8 @@ export function HomePage({ posts }: HomePageProps) {
                 Jacob
                 <span className="block">& Vicki</span>
               </h1>
-              <p className="mt-6 max-w-xl font-['Avenir_Next','Gill_Sans',sans-serif] text-base leading-7 text-[#fff8ee]/82 sm:text-lg">
-                A quiet little corner for the celebration ahead. Save the date,
-                travel notes, and RSVP details will live here soon.
+              <p className="mt-6 max-w-xl font-['Avenir_Next','Gill_Sans',sans-serif] text-base leading-7 text-[#fff8ee]/82 sm:text-xl">
+                October 30, 2027
               </p>
             </div>
 
